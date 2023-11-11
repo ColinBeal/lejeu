@@ -1,0 +1,147 @@
+@media print {
+  html, body {
+    display: none;  /* hide whole page */
+  }
+}
+
+:host {
+  display: flex;
+  background-color: #0F343C;
+  width: 100%;
+  height: 100svh;
+  font-family: 'Bungee', sans-serif;
+  color: #83989C;
+  .container {
+    display: flex;
+    flex-direction: row;
+    padding: 16px;
+    width: 100%;
+    .player-container {
+      display: flex;
+      width: 33%;
+      .health-bar-container {
+        height: 300px;
+        margin: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transform: skewY(40deg);
+        .single-bar {
+          visibility: hidden;
+          width: 30px;
+          border-radius: 4px;
+          height: 10%;
+          background-color: #375FEF;
+          backface-visibility: hidden;
+          transition: width 1s;
+        }
+      }
+
+      .shield-bar-container {
+        height: 300px;
+        margin: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transform: skewY(40deg);
+        .single-bar {
+          visibility: hidden;
+          width: 30px;
+          border-radius: 4px;
+          height: 10%;
+          background-color: #934CEE;
+          backface-visibility: hidden;
+          transition: width 1s;
+        }
+      }
+    }
+
+    .middle-container {
+      display: flex;
+      flex-direction: column;
+      width: 33%;
+      align-items: center;
+      .dices-container {
+        display: flex;
+        width: 228px;
+        gap: 16px;
+        flex-wrap: wrap;
+        .dice {
+          img {
+            height: 64px;
+          }
+        }
+        .locked {
+          border-radius: 4px;
+          box-shadow: 0px 0px 0px 4px #ffffff;
+        }
+        .dice:hover {
+          cursor: pointer;
+        }
+        .doomed {
+          font-size: 36px;
+        }
+      }
+
+      .effect-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        .effect-line {
+          width: 100%;
+          background-color: #0a2126;
+          border-radius: 4px;
+          padding-inline: 16px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .block {
+          width: 16px;
+          height: 16px;
+          background-color: #ffffff;
+        }
+        .X {
+          background-color: #ffffff;
+        }
+        .MUL {
+          background-color: #FF017B;
+        }
+        .WEA {
+          background-color: #01FF57;
+        }
+        .MON {
+          background-color: #FFC701;
+        }
+        .EVD {
+          background-color: #D74CEE;
+        }
+        .SHD {
+          background-color: #934CEE;
+        }
+      }
+    }
+  }
+}
+
+
+@keyframes growAnimation {
+  from {
+    width: 0;
+  }
+  to {
+    width: 30px;
+  }
+}
+
+
+@keyframes shrinkAnimation {
+  from {
+    width: 30px;
+  }
+  to {
+    visibility: hidden;
+    width: 0;
+  }
+}
