@@ -1,0 +1,38 @@
+
+:host {
+  width: 24px;
+  margin-block: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transform: skewY(30deg);
+  height: 100%;
+  .single-bar {
+    visibility: hidden;
+    width: 100%;
+    border-radius: 4px;
+    height: 0;
+    backface-visibility: hidden;
+    transition: width 1s;
+  }
+  .label {
+    text-align: center;
+    font-size: 12px;
+    line-height: 12px;
+  }
+}
+:host.health {
+  .single-bar {
+    background-color: #37EF54;
+  }
+}
+:host.special {
+  .single-bar {
+    background-color: #E00570;
+  }
+}
+:host.shield {
+  .single-bar {
+    background-color: #934CEE;
+  }
+}

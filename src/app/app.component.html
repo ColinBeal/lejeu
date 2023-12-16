@@ -1,5 +1,71 @@
+<nav>
+    <ul>
+      <li class="logo">
+        DiceFighter <span class="version">v0.1</span>
+      </li>
+      <li>
+          Menu
+      </li>
+    </ul>
+</nav>
+<body>
+  <div class="ship-container">
+    <div class="ship-image-container">
+
+    </div>
+    <div class="bars">
+      <bar [barConfiguration]="healthBar" [currentValue]="health" [ngClass]="healthBar.type"></bar>
+      <bar [barConfiguration]="shieldBar" [ngClass]="shieldBar.type"></bar>
+      <bar [barConfiguration]="specialBar" [ngClass]="specialBar.type"></bar>
+    </div>
+  </div>
+  <div class="actions-container">
+    <div class="info-row">
+      <div class="turn-container">
+        <div class="turn-count">
+            Turn 1
+        </div>
+        <div class="money-count">
+            $$ +100 %
+        </div>
+      </div>
+      <div class="evade button" (click)="takeDamage(1)">
+        Evade <span class="counter">1/10</span>
+      </div>
+      <div class="info button">
+        Info
+      </div>
+    </div>
+
+    <div class="dices-row">
+        <img *ngFor="let dice of dices" [ngClass]="{locked: dice.locked}" [src]="'../assets/svg/'+ dice.symbol +'.svg'" [alt]="dice.symbol" (click)="toggleDice(dice, dice.locked)">
+    </div>
+    <div class="action-row">
+      <div (click)="rethrowDices()"  *ngIf="!doomed" class="reroll button">
+        Reroll
+      </div>
+      <div *ngIf="doomed" class="reroll button locked">
+        LOCKED
+      </div>
+      <div (click)="nextPhase()" class="turn button">
+        End turn
+      </div>
+    </div>
+  </div>
+  <div class="ship-container">
+    <div class="bars">
+
+    </div>
+    <div class="ship-image-container">
+
+    </div>
+  </div>
+</body>
 <div class="container">
-  <div class="player-container">
+
+</div>
+
+<!--<div class="player-container">
     <div class="health-bar-container">
       <div class="single-bar">
       </div>
@@ -54,7 +120,7 @@
     <div class="dices-container">
       <div *ngFor="let dice of dices">
         <div class="dice">
-          <img [ngClass]="{locked: dice.locked}" [src]="'../assets/png/'+ dice.symbol +'.png'" [alt]="dice.symbol" (click)="toggleDice(dice, dice.locked)">
+          <img [ngClass]="{locked: dice.locked}" [src]="'../assets/svg/'+ dice.symbol +'.svg'" [alt]="dice.symbol" (click)="toggleDice(dice, dice.locked)">
         </div>
       </div>
       <div (click)="rethrowDices()" *ngIf="!doomed"> Retry </div>
@@ -62,25 +128,13 @@
     </div>
     <div class="effect-container">
       <div class="header">Turn Modifiers</div>
-      <div class="effect-line" *ngFor="let effect of lockedDiceFaces | keyvalue">
-        <div class="block" [ngClass]="effect.key" *ngFor="let block of effect.value">
+      <div class="effect-line" *ngFor="let effect of diceEffects">
+        <div class="block" [ngClass]="effect.type" *ngFor="let block of effect.value">
         </div>
-        <span *ngIf="effect.key === 'X' && effect.value.length < 4">
-          WARNING ! {{effect.key}} {{effect.value.length}} / 4
-        </span>
-        <span *ngIf="effect.key === 'X' && effect.value.length > 3">
-          DOOMED !!!
-        </span>
-        <span *ngIf="effect.key !== 'X' && effect.value.length < 3">
-          {{effect.key}} {{effect.value.length}} / 3
-        </span>
-        <span *ngIf="effect.key !== 'X' && effect.value.length > 2">
-          ACTIVATED {{effect.key}} {{effect.value.length}}
-        </span>
+        {{DiceEffectsLabel[effect.type][effect.effectId]}}
      </div>
     </div>
-  </div>
-</div>
+  </div>-->
 
 
 

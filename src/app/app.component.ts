@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DiceEffectService } from './services/dice-effect.service';
-import { DiceInterface } from './interfaces/dice.interface';
+import { DiceEffect, DiceFaceNames, DiceInterface } from './interfaces/dice.interface';
+import { EffectsLabel } from './constants/dice.constant';
+import { BarInterface } from './interfaces/bar.interface';
 
 @Component({
   selector: 'app-root',
@@ -11,20 +13,25 @@ import { DiceInterface } from './interfaces/dice.interface';
 export class AppComponent implements OnInit {
   title = 'lejeu';
 
-  public diceFaces: {[key: number]: string} = {
+  public diceFaces: {[key: number]: DiceFaceNames} = {
     0: 'EVD',
     1: 'WEA',
     2: 'X',
     3: 'SHD',
-    4: 'MUL',
+    4: 'SPC',
     5: 'MON'
   }
+  public DiceEffectsLabel = EffectsLabel
+  public diceEffects?: DiceEffect[];
 
   public lockedDiceFaces?: {[key: string]: string[]};
 
   public dices: DiceInterface[] = []
   public doomed: boolean = false;
-
+  public healthBar: BarInterface;
+  public health: number = 15;
+  public shieldBar: BarInterface;
+  public specialBar: BarInterface;
 
   constructor(private diceEffectService: DiceEffectService) {
 
@@ -32,29 +39,20 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initDices()
-    this.animateBars(0, 20, 'grow');
-  }
-
- animateBars(currentIndex: number, endIndex: number, direction: 'grow' | 'shrink') {
-    if (currentIndex !== endIndex) {
-      const singleBars = document.querySelectorAll('.single-bar');
-      const bar = singleBars[currentIndex] as HTMLElement;
-      if (direction === 'grow') {
-        if (currentIndex < singleBars.length) {
-          bar.style.animation = 'growAnimation 0.25s';
-          bar.style.visibility = 'visible';
-          setTimeout(() => {
-            this.animateBars(currentIndex + 1, endIndex, direction); // Animate the next bar after a delay
-          }, 250); // Delay between animations (1 second)
-        }
-      }
-      else {
-        bar.style.animation = 'shrinkAnimation 0.25s';
-        setTimeout(() => {
-          bar.style.visibility = 'hidden';
-          this.animateBars(currentIndex - 1, endIndex, direction); // Animate the next bar after a delay
-        }, 250); // Delay between animations (1 second)
-      }
+    this.healthBar = {
+      type: 'health',
+      label: 'HP',
+      maxValue: 15
+    }
+    this.shieldBar = {
+      type: 'shield',
+      label: 'SHD',
+      maxValue: 15
+    }
+    this.specialBar = {
+      type: 'special',
+      label: 'SPC',
+      maxValue: 9
     }
   }
 
@@ -72,13 +70,17 @@ export class AppComponent implements OnInit {
     this.checkDices(true);
   }
 
+  takeDamage(damage: number) {
+    this.health = this.health - damage;
+  }
+
   diceThrow() {
     return this.diceFaces[Math.floor(Math.random() * 6)];
   }
 
   rethrowDices() {
     const intervals: number[] = [];
-    let symbol: string[] = [];
+    let symbol: DiceFaceNames[] = [];
     let unlockedDices = this.dices.filter(dice => !dice.locked)
     for (let index = 0; index < unlockedDices.length; index++) {
       symbol[index] = this.diceThrow();
@@ -129,7 +131,7 @@ export class AppComponent implements OnInit {
     if (this.lockedDiceFaces['X'] && this.lockedDiceFaces['X'].length > 3 ) {
       this.doomed = true;
     }
-    this.diceEffectService.getDiceEffects(this.dices.filter(dice => !dice.locked));
+    this.diceEffects = this.diceEffectService.getDiceEffects(this.dices.filter(dice => dice.locked));
   }
 
   nextPhase() {
