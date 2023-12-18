@@ -46,52 +46,23 @@
     .ship-container {
       flex-basis: 30%;
       display: flex;
-      gap: 8px;
+      justify-content: space-between;
       .ship-image-container {
-        flex-basis: 65%;
-        background-color: #0A252A;
+        flex-basis: 66%;
+        background-color: #000000;
         border-radius: 4px;
+        display: flex;
+        img {
+          width: 100%;
+          align-self: center;
+        }
       }
       .bars {
         display: flex;
         flex-direction: row;
         gap: 8px;
-        .bar-container {
-          width: 24px;
-          margin-block: 8px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          transform: skewY(30deg);
-          .single-bar {
-            visibility: hidden;
-            width: 100%;
-            border-radius: 4px;
-            height: calc(100% / 10);
-            backface-visibility: hidden;
-            transition: width 1s;
-          }
-          .label {
-            text-align: center;
-            font-size: 12px;
-            line-height: 12px;
-          }
-        }
-        .health.bar-container {
-          .single-bar {
-            background-color: #37EF54;
-          }
-        }
-        .special.bar-container {
-          .single-bar {
-            background-color: #E00570;
-          }
-        }
-        .shield.bar-container {
-          .single-bar {
-            background-color: #934CEE;
-          }
-        }
+        height: calc(100% - 16px);
+        flex-basis: 30%;
       }
     }
     .actions-container {
@@ -292,25 +263,4 @@
       }
     }
   }*/
-}
-
-
-@keyframes growAnimation {
-  from {
-    width: 0;
-  }
-  to {
-    width: 24px;
-  }
-}
-
-
-@keyframes shrinkAnimation {
-  from {
-    width: 24px;
-  }
-  to {
-    visibility: hidden;
-    width: 0;
-  }
 }

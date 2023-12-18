@@ -17,69 +17,56 @@ export class BarComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() currentValue: number = 0;
 
   public bars: any[] = []
-  constructor() {
-
-  }
+  constructor() {}
 
   ngOnInit(): void {
     this.bars = new Array(this.barConfiguration.maxValue).fill(0);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentValue']) {
-
+    if (changes['currentValue'] && changes['currentValue'].currentValue !== changes['currentValue'].previousValue && !changes['currentValue'].firstChange) {
       if (changes['currentValue'].currentValue < changes['currentValue'].previousValue) {
-        this.animateBars(changes['currentValue'].previousValue - 1, changes['currentValue'].currentValue - 1, 'shrink');
+        this.shrinkBars(changes['currentValue'].previousValue-1, changes['currentValue'].currentValue-1);
+      }
+      if (changes['currentValue'].currentValue > changes['currentValue'].previousValue) {
+        this.growBars(changes['currentValue'].previousValue-1, changes['currentValue'].currentValue-1);
       }
     }
   }
 
   ngAfterViewInit(): void {
-    console.log(this.currentValue);
-    const barsArray = this.singleBars.toArray();
-    for (const bar of barsArray) {
-      bar.nativeElement.style.height = 100/this.barConfiguration.maxValue + '%'
-    }
     this.growBars(0, this.currentValue-1);
-    //this.animateBars(this.barConfiguration.maxValue-1, -1, 'grow');
   }
 
   growBars(startIndex: number, endIndex: number) {
-    const barsArray = this.singleBars.toArray();
-    let delay = 0;
-    for (let i = startIndex; i <= endIndex; i++) {
-      setTimeout(() => {
-      const bar = barsArray[i].nativeElement;
-      bar.style.animation = 'growAnimation 0.25s';
-      bar.style.visibility = 'visible';
-      }, delay);
-    delay += 250;
+    if (endIndex <= this.barConfiguration.maxValue) {
+      const barsArray = this.singleBars.toArray();
+      let delay = 0;
+      for (let i = startIndex; i <= endIndex; i++) {
+        setTimeout(() => {
+        const bar = barsArray[i].nativeElement;
+        bar.style.animation = 'growAnimation 0.25s';
+        bar.style.width = '100%';
+        }, delay);
+      delay += 250;
+      }
     }
+    return
   }
 
   shrinkBars(startIndex: number, endIndex: number) {
-  }
-
- animateBars(currentIndex: number, endIndex: number, direction: 'grow' | 'shrink') {
-    if (currentIndex !== endIndex) {
+    if (startIndex >= 0)  {
       const barsArray = this.singleBars.toArray();
-      const bar = barsArray[currentIndex].nativeElement;
-      if (direction === 'grow') {
-        if (currentIndex < this.singleBars.length) {
-          bar.style.animation = 'growAnimation 0.25s';
-          bar.style.visibility = 'visible';
-          setTimeout(() => {
-            this.animateBars(currentIndex - 1, endIndex, direction); // Animate the next bar after a delay
-          }, 250); // Delay between animations (1 second)
-        }
-      }
-      else {
-        bar.style.animation = 'shrinkAnimation 0.25s';
+      let delay = 0;
+      barsArray.reverse();
+      for (let i = startIndex; i > endIndex; i--) {
+        const bar = barsArray[i].nativeElement;
         setTimeout(() => {
-          bar.style.visibility = 'hidden';
-          this.animateBars(currentIndex + 1, endIndex, direction); // Animate the next bar after a delay
-        }, 250); // Delay between animations (1 second)
+          bar.style.width = '0px';
+        }, delay);
+        delay += 250;
       }
     }
+    return
   }
 }

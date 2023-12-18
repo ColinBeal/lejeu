@@ -3,6 +3,8 @@ import { DiceEffectService } from './services/dice-effect.service';
 import { DiceEffect, DiceFaceNames, DiceInterface } from './interfaces/dice.interface';
 import { EffectsLabel } from './constants/dice.constant';
 import { BarInterface } from './interfaces/bar.interface';
+import { ShipDataInterface } from './interfaces/ship.interface';
+import { CombatStateInterface } from './interfaces/combat.interface';
 
 @Component({
   selector: 'app-root',
@@ -22,16 +24,20 @@ export class AppComponent implements OnInit {
     5: 'MON'
   }
   public DiceEffectsLabel = EffectsLabel
-  public diceEffects?: DiceEffect[];
+  public diceEffects: DiceEffect[];
 
   public lockedDiceFaces?: {[key: string]: string[]};
 
-  public dices: DiceInterface[] = []
-  public doomed: boolean = false;
-  public healthBar: BarInterface;
-  public health: number = 15;
-  public shieldBar: BarInterface;
-  public specialBar: BarInterface;
+  public dices: DiceInterface[] = [];
+  public blockReroll: boolean = false;
+  public playerData: ShipDataInterface;
+  public enemyData: ShipDataInterface;
+  public combatState: CombatStateInterface = {
+    turn: 1,
+    phase: 'player',
+    moneyModifier: 0,
+    doomed: false
+  }
 
   constructor(private diceEffectService: DiceEffectService) {
 
@@ -39,27 +45,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.initDices()
-    this.healthBar = {
-      type: 'health',
-      label: 'HP',
-      maxValue: 15
-    }
-    this.shieldBar = {
-      type: 'shield',
-      label: 'SHD',
-      maxValue: 15
-    }
-    this.specialBar = {
-      type: 'special',
-      label: 'SPC',
-      maxValue: 9
-    }
+    this.playerData = this.generateData(15, 15, 10, 15, 15, 0);
+    this.enemyData = this.generateData(20, 10, 10, 20, 10);
   }
 
   initDices() {
     this.dices = [];
-    this.doomed = false;
-    for (let index = 0; index < 9; index++) {
+    for (let index = 0; index < 10; index++) {
       this.dices.push(
         {
           symbol: this.diceThrow(),
@@ -70,8 +62,56 @@ export class AppComponent implements OnInit {
     this.checkDices(true);
   }
 
-  takeDamage(damage: number) {
-    this.health = this.health - damage;
+  nextPhase() {
+    if (this.combatState.phase === 'player') {
+      console.log(this.diceEffects);
+      this.diceEffectService.triggerDiceEffects(this.diceEffects, this.playerData, this.enemyData, this.combatState);
+      this.combatState.doomed = false;
+      this.combatState.phase = 'enemy';
+      setTimeout(() => {
+        this.nextPhase();
+      }, 1000);
+    }
+    else {
+      this.combatState.phase = 'player';
+      this.combatState.turn++;
+      this.initDices();
+    }
+  }
+
+  generateData(healthMaxValue: number,
+               shieldMaxValue: number,
+               specialMaxValue: number,
+               health: number,
+               shield: number,
+               moneyModifier?: number): ShipDataInterface {
+    return {
+      healthBar: {
+        type: 'health' as const,
+        label: 'HP' as const,
+        maxValue: healthMaxValue
+      },
+      shieldBar: {
+        type: 'shield' as const,
+        label: 'SHD' as const,
+        maxValue: shieldMaxValue
+      },
+      specialBar: {
+        type: 'special' as const,
+        label: 'SPC' as const,
+        maxValue: specialMaxValue
+      },
+      health: health,
+      shield: shield,
+      special: 0,
+      evadeStack: 0,
+      evade: 0,
+      moneyModifier: moneyModifier
+    };
+  }
+
+  takeDamage(damage: number, ship: ShipDataInterface) {
+    ship.health = ship.health - damage;
   }
 
   diceThrow() {
@@ -79,6 +119,7 @@ export class AppComponent implements OnInit {
   }
 
   rethrowDices() {
+    this.blockReroll = true;
     const intervals: number[] = [];
     let symbol: DiceFaceNames[] = [];
     let unlockedDices = this.dices.filter(dice => !dice.locked)
@@ -94,6 +135,7 @@ export class AppComponent implements OnInit {
         unlockedDices[index].symbol = symbol[index]
       }
       this.checkDices(false);
+      this.blockReroll = false;
     }, 1000)
   }
 
@@ -129,12 +171,8 @@ export class AppComponent implements OnInit {
       }
     }
     if (this.lockedDiceFaces['X'] && this.lockedDiceFaces['X'].length > 3 ) {
-      this.doomed = true;
+      this.combatState.doomed = true;
     }
     this.diceEffects = this.diceEffectService.getDiceEffects(this.dices.filter(dice => dice.locked));
-  }
-
-  nextPhase() {
-    this.initDices();
   }
 }

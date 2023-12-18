@@ -17,7 +17,6 @@ MoneyEffectsIDs
 
 export interface DiceEffect {
     effectId: EffectIds,
-    activated: boolean,
     type: DiceFaceNames,
-    value: number[]
+    value: number
 }

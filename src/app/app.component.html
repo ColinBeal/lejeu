@@ -11,26 +11,26 @@
 <body>
   <div class="ship-container">
     <div class="ship-image-container">
-
+      <img [src]="'../assets/png/player.png'" alt="player ship">
     </div>
     <div class="bars">
-      <bar [barConfiguration]="healthBar" [currentValue]="health" [ngClass]="healthBar.type"></bar>
-      <bar [barConfiguration]="shieldBar" [ngClass]="shieldBar.type"></bar>
-      <bar [barConfiguration]="specialBar" [ngClass]="specialBar.type"></bar>
+      <bar [barConfiguration]="playerData.healthBar" [currentValue]="playerData.health" [ngClass]="playerData.healthBar.type"></bar>
+      <bar [barConfiguration]="playerData.shieldBar" [currentValue]="playerData.shield" [ngClass]="playerData.shieldBar.type"></bar>
+      <bar [barConfiguration]="playerData.specialBar" [currentValue]="playerData.special" [ngClass]="playerData.specialBar.type"></bar>
     </div>
   </div>
   <div class="actions-container">
     <div class="info-row">
       <div class="turn-container">
         <div class="turn-count">
-            Turn 1
+            Turn {{combatState.turn}}
         </div>
         <div class="money-count">
-            $$ +100 %
+            $$ +{{combatState.moneyModifier}} %
         </div>
       </div>
-      <div class="evade button" (click)="takeDamage(1)">
-        Evade <span class="counter">1/10</span>
+      <div class="evade button" (click)="takeDamage(1, playerData)">
+        Evade <span class="counter">{{playerData.evadeStack}}/10</span>
       </div>
       <div class="info button">
         Info
@@ -38,13 +38,18 @@
     </div>
 
     <div class="dices-row">
+      <ng-container *ngIf="combatState.phase === 'player'">
         <img *ngFor="let dice of dices" [ngClass]="{locked: dice.locked}" [src]="'../assets/svg/'+ dice.symbol +'.svg'" [alt]="dice.symbol" (click)="toggleDice(dice, dice.locked)">
+      </ng-container>
+      <ng-container *ngIf="combatState.phase === 'enemy'">
+        <h1>Enemy Turn</h1>
+      </ng-container>
     </div>
     <div class="action-row">
-      <div (click)="rethrowDices()"  *ngIf="!doomed" class="reroll button">
+      <div (click)="rethrowDices()"  *ngIf="!combatState.doomed" class="reroll button">
         Reroll
       </div>
-      <div *ngIf="doomed" class="reroll button locked">
+      <div *ngIf="combatState.doomed" class="reroll button locked">
         LOCKED
       </div>
       <div (click)="nextPhase()" class="turn button">
@@ -52,12 +57,14 @@
       </div>
     </div>
   </div>
-  <div class="ship-container">
+  <div class="ship-container enemy">
     <div class="bars">
-
+      <bar [barConfiguration]="enemyData.healthBar" [currentValue]="enemyData.health" [ngClass]="enemyData.healthBar.type"></bar>
+      <bar [barConfiguration]="enemyData.shieldBar" [currentValue]="enemyData.shield" [ngClass]="enemyData.shieldBar.type"></bar>
+      <bar [barConfiguration]="enemyData.specialBar" [currentValue]="enemyData.special" [ngClass]="enemyData.specialBar.type"></bar>
     </div>
     <div class="ship-image-container">
-
+      <img [src]="'../assets/png/enemy.png'" alt="enemy ship">
     </div>
   </div>
 </body>
